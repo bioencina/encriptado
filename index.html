@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Criptografía Asimétrica Explicada</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#dbeafe,#ede9fe,#dcfce7);
+    padding:20px;
+    color:#222;
+}
+
+.contenedor{
+    max-width:1100px;
+    margin:auto;
+}
+
+.tarjeta{
+    background:white;
+    border-radius:20px;
+    padding:25px;
+    margin:20px 0;
+    box-shadow:0 8px 18px rgba(0,0,0,0.15);
+}
+
+h1{
+    text-align:center;
+    color:#6d28d9;
+}
+
+h2{
+    color:#2563eb;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    font-size:20px;
+    font-weight:bold;
+    border:none;
+    border-radius:15px;
+    background:#22c55e;
+    color:white;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+button:hover{
+    background:#16a34a;
+}
+
+input, textarea{
+    width:100%;
+    padding:12px;
+    font-size:18px;
+    border-radius:12px;
+    border:2px solid #93c5fd;
+    box-sizing:border-box;
+    margin:10px 0;
+}
+
+textarea{
+    min-height:100px;
+}
+
+.resultado{
+    background:#e0f2fe;
+    border-radius:15px;
+    padding:15px;
+    min-height:50px;
+    font-size:20px;
+    word-break:break-word;
+}
+
+.clave{
+    background:#fef08a;
+    border-radius:15px;
+    padding:15px;
+    font-size:22px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.codigo{
+    background:#111827;
+    color:#22c55e;
+    padding:15px;
+    border-radius:15px;
+    font-family:monospace;
+    font-size:20px;
+    word-break:break-word;
+}
+
+.explicacion{
+    background:#fff3cd;
+    border-radius:15px;
+    padding:15px;
+    font-size:18px;
+    line-height:1.6;
+}
+
+.paso{
+    background:white;
+    padding:10px;
+    border-radius:10px;
+    margin:10px 0;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+<h1>🔐 Criptografía Asimétrica</h1>
+
+<div class="tarjeta">
+
+<h2>📘 ¿Qué vamos a aprender?</h2>
+
+<p>
+En criptografía asimétrica existen dos claves:
+</p>
+
+<ul>
+<li>🔓 <strong>Clave pública</strong>: se puede compartir.</li>
+<li>🔒 <strong>Clave privada</strong>: debe permanecer secreta.</li>
+</ul>
+
+<p>
+El mensaje se cifra usando la clave pública.
+</p>
+
+<p>
+Solo quien tenga la clave privada correcta podrá leer el mensaje.
+</p>
+
+<div class="explicacion">
+Este ejemplo es educativo y simplificado para entender el funcionamiento.
+</div>
+
+</div>
+
+<div class="tarjeta">
+
+<h2>1️⃣ Generar claves</h2>
+
+<p>
+Pulsa el botón para crear automáticamente las claves.
+</p>
+
+<button onclick="generarClaves()">Generar claves</button>
+
+<div class="clave">
+Clave pública: <span id="publica">---</span><br><br>
+Clave privada: <span id="privada">---</span>
+</div>
+
+</div>
+
+<div class="tarjeta">
+
+<h2>2️⃣ Escribir mensaje</h2>
+
+<textarea id="mensaje">LA CRIPTOGRAFIA PROTEGE INFORMACION</textarea>
+
+<button onclick="cifrar()">Cifrar mensaje</button>
+
+<h3>Mensaje cifrado:</h3>
+
+<div class="codigo" id="cifrado"></div>
+
+<h3>📖 Cómo se ha cifrado:</h3>
+
+<div class="explicacion" id="explicacionCifrado"></div>
+
+</div>
+
+<div class="tarjeta">
+
+<h2>3️⃣ Descifrar mensaje</h2>
+
+<p>
+Introduce la clave privada correcta.
+</p>
+
+<input type="number" id="claveUsuario" placeholder="Escribe la clave privada">
+
+<button onclick="descifrar()">Descifrar mensaje</button>
+
+<h3>Mensaje descifrado:</h3>
+
+<div class="resultado" id="resultado"></div>
+
+<h3>📖 Cómo se ha descifrado:</h3>
+
+<div class="explicacion" id="explicacionDescifrado"></div>
+
+</div>
+
+<div class="tarjeta">
+
+<h2>🎯 Cómo usarlo en clase</h2>
+
+<ul>
+<li>Un alumno genera sus claves.</li>
+<li>Comparte solo la clave pública.</li>
+<li>Otro alumno escribe y cifra un mensaje.</li>
+<li>Solo quien tenga la clave privada correcta podrá leerlo.</li>
+<li>Los demás verán únicamente números cifrados.</li>
+</ul>
+
+</div>
+
+</div>
+
+<script>
+
+let clavePublica = 0;
+let clavePrivada = 0;
+let mensajeCifrado = [];
+
+function generarClaves(){
+
+    clavePrivada = Math.floor(Math.random()*20)+5;
+
+    clavePublica = clavePrivada * 3 + 7;
+
+    document.getElementById("publica").textContent = clavePublica;
+
+    document.getElementById("privada").textContent = clavePrivada;
+}
+
+function cifrar(){
+
+    if(clavePublica === 0){
+
+        alert("Primero debes generar las claves.");
+
+        return;
+    }
+
+    const texto = document.getElementById("mensaje").value.toUpperCase();
+
+    mensajeCifrado = [];
+
+    let explicacion = "";
+
+    for(let i=0;i<texto.length;i++){
+
+        let letra = texto[i];
+
+        let codigo = texto.charCodeAt(i);
+
+        let cifrado = (codigo + clavePublica) * 2;
+
+        mensajeCifrado.push(cifrado);
+
+        explicacion += `
+        <div class="paso">
+        <strong>${letra}</strong><br>
+        Código ASCII: ${codigo}<br>
+        (${codigo} + clave pública ${clavePublica}) × 2<br>
+        = ${cifrado}
+        </div>
+        `;
+    }
+
+    document.getElementById("cifrado").textContent =
+        mensajeCifrado.join(" - ");
+
+    document.getElementById("explicacionCifrado").innerHTML =
+        explicacion;
+}
+
+function descifrar(){
+
+    const clave = parseInt(document.getElementById("claveUsuario").value);
+
+    if(clave !== clavePrivada){
+
+        document.getElementById("resultado").textContent =
+            "❌ Clave privada incorrecta";
+
+        document.getElementById("explicacionDescifrado").innerHTML =
+            "";
+
+        return;
+    }
+
+    let texto = "";
+
+    let explicacion = "";
+
+    for(let i=0;i<mensajeCifrado.length;i++){
+
+        let numero = mensajeCifrado[i];
+
+        let paso1 = numero / 2;
+
+        let paso2 = paso1 - clavePublica;
+
+        let letra = String.fromCharCode(paso2);
+
+        texto += letra;
+
+        explicacion += `
+        <div class="paso">
+        Número cifrado: ${numero}<br>
+        ${numero} ÷ 2 = ${paso1}<br>
+        ${paso1} - clave pública ${clavePublica} = ${paso2}<br>
+        Código ASCII ${paso2} → letra <strong>${letra}</strong>
+        </div>
+        `;
+    }
+
+    document.getElementById("resultado").textContent = texto;
+
+    document.getElementById("explicacionDescifrado").innerHTML =
+        explicacion;
+}
+
+</script>
+
+</body>
+</html>
